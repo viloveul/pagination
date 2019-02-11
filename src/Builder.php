@@ -10,19 +10,19 @@ use Viloveul\Pagination\Parameter;
 class Builder implements IBuilder
 {
     /**
+     * @var int
+     */
+    protected $count = 0;
+
+    /**
      * @var array
      */
-    protected $data = [];
+    protected $items = [];
 
     /**
      * @var mixed
      */
     protected $parameter;
-
-    /**
-     * @var int
-     */
-    protected $total = 0;
 
     /**
      * @param $name
@@ -33,12 +33,17 @@ class Builder implements IBuilder
         $this->parameter = $parameter;
     }
 
+    public function getCount(): int
+    {
+        return abs($this->count);
+    }
+
     /**
      * @return mixed
      */
-    public function getData(): array
+    public function getItems(): array
     {
-        return $this->data;
+        return $this->items;
     }
 
     public function getLinks(): array
@@ -49,24 +54,24 @@ class Builder implements IBuilder
 
         return [
             'self' => $this->buildUrl($current),
-            'prev' => $current > 1 ? $this->buildUrl($current - 1) : null,
-            'next' => ($current * $size) < $this->getTotal() ? $this->buildUrl($current + 1) : null,
-            'first' => $this->buildUrl(1),
-            'last' => $this->buildUrl(ceil($this->getTotal() / $size)),
+            'prev_page' => $current > 1 ? $this->buildUrl($current - 1) : null,
+            'next_page' => ($current * $size) < $this->getCount() ? $this->buildUrl($current + 1) : null,
+            'first_page' => $this->buildUrl(1),
+            'last_page' => $this->buildUrl(ceil($this->getCount() / $size)),
         ];
     }
 
     public function getMeta(): array
     {
         $parameter = $this->getParameter();
-        $total = $this->getTotal();
+        $count = $this->getCount();
         $conditions = $parameter->getConditions();
         $size = $parameter->getPageSize();
         $page = $parameter->getCurrentPage();
         $orderBy = $parameter->getOrderBy();
         $sortOrder = $parameter->getSortOrder();
 
-        return compact('total', 'conditions', 'size', 'page', 'orderBy', 'sortOrder');
+        return compact('count', 'conditions', 'size', 'page', 'orderBy', 'sortOrder');
     }
 
     public function getParameter(): IParameter
@@ -77,15 +82,11 @@ class Builder implements IBuilder
     public function getResults(): array
     {
         return [
-            'meta' => $this->getMeta(),
-            'data' => $this->getData(),
-            'links' => $this->getLinks(),
+            'items' => $this->getItems(),
+            'meta' => array_merge($this->getMeta(), [
+                'links' => $this->getLinks(),
+            ]),
         ];
-    }
-
-    public function getTotal(): int
-    {
-        return abs($this->total);
     }
 
     /**
