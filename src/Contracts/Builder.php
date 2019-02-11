@@ -7,7 +7,9 @@ use Viloveul\Pagination\Contracts\Parameter;
 
 interface Builder
 {
-    public function getData(): array;
+    public function getCount(): int;
+
+    public function getItems(): array;
 
     public function getLinks(): array;
 
@@ -16,8 +18,6 @@ interface Builder
     public function getParameter(): Parameter;
 
     public function getResults(): array;
-
-    public function getTotal(): int;
 
     /**
      * @param Closure $handler
