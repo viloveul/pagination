@@ -15,12 +15,10 @@ interface Builder
 
     public function getParameter(): Parameter;
 
-    public function getResults(): array;
-
     public function getTotal(): int;
 
     /**
      * @param Closure $handler
      */
-    public function prepare(Closure $handler): void;
+    public function with(Closure $handler): void;
 }
