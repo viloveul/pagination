@@ -22,20 +22,20 @@ $parameter->setBaseUrl('/api/v1/user/index');
 // $parameter->setPageSize(20);
 
 $pagination = new Viloveul\Pagination\Builder($parameter);
-$pagination->prepare(function () use ($parameter) {
+$pagination->with(function ($conditions, $size, $page, $order, $sort) use ($parameter) {
     $model = new YourUserModelSample();
-    foreach ($parameter->getConditions() as $key => $value) {
+    foreach ($conditions as $key => $value) {
         $model->where($key, 'LIKE', "%{$value}%");
     }
     // set total results
-    $this->total = $model->count();
+    $total = $model->count();
     // set result data array
-    $this->data = $model->orderBy($parameter->getOrderBy(), $parameter->getSortOrder())
-        ->skip(($parameter->getCurrentPage() * $parameter->getPageSize()) - $parameter->getPageSize())
-        ->take($parameter->getPageSize())
-        ->get()
-        ->toArray();
+    $result = $model->orderBy($order, $sort)->skip(($page * $size) - $size)->take($size)->get();
+
+    return new Viloveul\Pagination\ResultSet($total, $result->toArray());
 });
 
-var_dump($pagination->getResults());
+var_dump($pagination->getMeta());
+var_dump($pagination->getData());
+var_dump($pagination->getLinks());
 ```

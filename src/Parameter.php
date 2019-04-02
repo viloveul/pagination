@@ -11,7 +11,7 @@ class Parameter implements IParameter
     /**
      * @var string
      */
-    protected $baseUrl = '/api/v1';
+    protected $baseUrl = '/v1';
 
     /**
      * @var array

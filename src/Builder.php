@@ -3,9 +3,11 @@
 namespace Viloveul\Pagination;
 
 use Closure;
+use InvalidArgumentException;
+use Viloveul\Pagination\Parameter;
 use Viloveul\Pagination\Contracts\Builder as IBuilder;
 use Viloveul\Pagination\Contracts\Parameter as IParameter;
-use Viloveul\Pagination\Parameter;
+use Viloveul\Pagination\Contracts\ResultSet as IResultSet;
 
 class Builder implements IBuilder
 {
@@ -58,29 +60,20 @@ class Builder implements IBuilder
 
     public function getMeta(): array
     {
-        $parameter = $this->getParameter();
         $total = $this->getTotal();
+        $parameter = $this->getParameter();
         $conditions = $parameter->getConditions();
         $size = $parameter->getPageSize();
         $page = $parameter->getCurrentPage();
-        $orderBy = $parameter->getOrderBy();
-        $sortOrder = $parameter->getSortOrder();
+        $order = $parameter->getOrderBy();
+        $sort = $parameter->getSortOrder();
 
-        return compact('total', 'conditions', 'size', 'page', 'orderBy', 'sortOrder');
+        return compact('total', 'conditions', 'size', 'page', 'order', 'sort');
     }
 
     public function getParameter(): IParameter
     {
-        return is_null($this->parameter) ? new Parameter('search') : $this->parameter;
-    }
-
-    public function getResults(): array
-    {
-        return [
-            'meta' => $this->getMeta(),
-            'data' => $this->getData(),
-            'links' => $this->getLinks(),
-        ];
+        return null === $this->parameter ? new Parameter('search') : $this->parameter;
     }
 
     public function getTotal(): int
@@ -91,9 +84,20 @@ class Builder implements IBuilder
     /**
      * @param Closure $handler
      */
-    public function prepare(Closure $handler): void
+    public function with(Closure $handler): void
     {
-        call_user_func($handler->bindTo($this, $this));
+        $parameter = $this->getParameter();
+        $conditions = $parameter->getConditions();
+        $size = $parameter->getPageSize();
+        $page = $parameter->getCurrentPage();
+        $order = $parameter->getOrderBy();
+        $sort = $parameter->getSortOrder();
+        $result = $handler($conditions, $size, $page, $order, $sort);
+        if (!($result instanceof IResultSet)) {
+            throw new InvalidArgumentException("Argument must return the ResultSet value");
+        }
+        $this->total = $result->getTotal();
+        $this->data = $result->getResults();
     }
 
     /**
@@ -104,6 +108,9 @@ class Builder implements IBuilder
     {
         $parameter = $this->getParameter();
         $base = $parameter->getBaseUrl();
+        if (!preg_match('/^https?\:\/\//', $base)) {
+            $base = '/' . trim($base, '/');
+        }
         $selfParams = array_replace_recursive($parameter->all(), [
             'page' => abs($page),
             'size' => $parameter->getPageSize(),
