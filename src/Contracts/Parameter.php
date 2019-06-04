@@ -12,11 +12,6 @@ interface Parameter extends ArrayAccess
 
     public function all(): array;
 
-    /**
-     * @param $default
-     */
-    public function getBaseUrl($default = '/'): string;
-
     public function getConditions(): array;
 
     /**
@@ -40,11 +35,6 @@ interface Parameter extends ArrayAccess
     public function getSearchName($default = 'search'): string;
 
     public function getSortOrder(): string;
-
-    /**
-     * @param $baseUrl
-     */
-    public function setBaseUrl($baseUrl): void;
 
     /**
      * @param array  $params

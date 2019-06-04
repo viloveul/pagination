@@ -9,8 +9,6 @@ interface Builder
 {
     public function getData(): array;
 
-    public function getLinks(): array;
-
     public function getMeta(): array;
 
     public function getParameter(): Parameter;

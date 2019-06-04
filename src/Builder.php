@@ -43,21 +43,6 @@ class Builder implements IBuilder
         return $this->data;
     }
 
-    public function getLinks(): array
-    {
-        $parameter = $this->getParameter();
-        $current = $parameter->getCurrentPage();
-        $size = $parameter->getPageSize();
-
-        return [
-            'self' => $this->buildUrl($current),
-            'prev' => $current > 1 ? $this->buildUrl($current - 1) : null,
-            'next' => ($current * $size) < $this->getTotal() ? $this->buildUrl($current + 1) : null,
-            'first' => $this->buildUrl(1),
-            'last' => $this->buildUrl(ceil($this->getTotal() / $size)),
-        ];
-    }
-
     public function getMeta(): array
     {
         $total = $this->getTotal();
@@ -98,23 +83,5 @@ class Builder implements IBuilder
         }
         $this->total = $result->getTotal();
         $this->data = $result->getResults();
-    }
-
-    /**
-     * @param  $page
-     * @return mixed
-     */
-    protected function buildUrl($page)
-    {
-        $parameter = $this->getParameter();
-        $base = $parameter->getBaseUrl();
-        if (!preg_match('/^https?\:\/\//', $base)) {
-            $base = '/' . trim($base, '/');
-        }
-        $selfParams = array_replace_recursive($parameter->all(), [
-            'page' => abs($page),
-            'size' => $parameter->getPageSize(),
-        ]);
-        return $base . ($selfParams ? ('?' . http_build_query($selfParams)) : '');
     }
 }
