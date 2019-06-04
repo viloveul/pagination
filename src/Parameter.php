@@ -9,11 +9,6 @@ use Viloveul\Pagination\Contracts\Parameter as IParameter;
 class Parameter implements IParameter
 {
     /**
-     * @var string
-     */
-    protected $baseUrl = '/v1';
-
-    /**
      * @var array
      */
     protected $conditions = [];
@@ -80,15 +75,6 @@ class Parameter implements IParameter
     public function all(): array
     {
         return $this->params;
-    }
-
-    /**
-     * @param  $default
-     * @return mixed
-     */
-    public function getBaseUrl($default = '/'): string
-    {
-        return $this->baseUrl ?: $default;
     }
 
     /**
@@ -182,14 +168,6 @@ class Parameter implements IParameter
     public function offsetUnset($key)
     {
         throw new BadMethodCallException("Method not exists.");
-    }
-
-    /**
-     * @param $baseUrl
-     */
-    public function setBaseUrl($baseUrl): void
-    {
-        $this->baseUrl = $baseUrl;
     }
 
     /**

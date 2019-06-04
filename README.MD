@@ -13,7 +13,6 @@ composer require viloveul/pagination
 require __DIR__ . '/vendor/autoload.php';
 
 $parameter = new Viloveul\Pagination\Parameter('search', $_GET);
-$parameter->setBaseUrl('/api/v1/user/index');
 
 // $paremeter->setConditions([]);
 // $parameter->setCurrentPage(1);
@@ -37,5 +36,4 @@ $pagination->with(function ($conditions, $size, $page, $order, $sort) use ($para
 
 var_dump($pagination->getMeta());
 var_dump($pagination->getData());
-var_dump($pagination->getLinks());
 ```
